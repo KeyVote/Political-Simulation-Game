@@ -18,8 +18,7 @@ public class CameraMovement : MonoBehaviour {
         return zoomInPixels / pixelsPerUnit;
     }
 
-    // Update is called once per frame
-    void Update () {
+    void LateUpdate () {
         Vector3 pos = transform.position;
 
 		if (Input.GetKey("w") || Input.mousePosition.y >= Screen.height - panBorderThickness) {
@@ -52,11 +51,12 @@ public class CameraMovement : MonoBehaviour {
         }
 
         zoom = Mathf.Clamp(zoom, 4f, 50f);
-        zoom = PixelPerfectClamp(zoom, 64f);
-        Debug.Log(string.Format("ZOOM IS " + zoom));
-
         pos.x = Mathf.Clamp(pos.x, -panLimit.x, panLimit.x);
         pos.y = Mathf.Clamp(pos.y, -panLimit.y, panLimit.y);
+
+        pos.x = PixelPerfectClamp(pos.x, 64f);
+        pos.y = PixelPerfectClamp(pos.y, 64f);
+        zoom = PixelPerfectClamp(zoom, 64f);
 
         GetComponent<Camera>().orthographicSize = zoom;
         transform.position = pos;

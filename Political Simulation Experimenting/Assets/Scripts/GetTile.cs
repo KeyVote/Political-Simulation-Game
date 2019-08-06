@@ -7,25 +7,47 @@ using UnityEditor;
 
 public class GetTile : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		
-	}
+    TileManager tileManager;
 
-    // Update is called once per frame
+    void Awake()
+    {
+        tileManager = FindObjectOfType<TileManager>();
+    }
+
+    int roundVector3Int(Vector3Int v3Int)
+    {
+        int x = Mathf.RoundToInt(v3Int.x);
+        int y = Mathf.RoundToInt(v3Int.y);
+        int z = Mathf.RoundToInt(v3Int.z);
+        int sum = x * 1000 + z + y * 1000000;
+
+        return sum;
+    }
+
     public Tilemap tilemap;
     public Tile socParty;
     public Tile fasParty;
+    int key;
+
 	void Update () {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("CLIKED PRIMARY");
             Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
             Vector3Int coordinate = tilemap.WorldToCell(pos);
-            Debug.Log(string.Format("Coordinates: {0} & {1}", coordinate.x, coordinate.y));
+
             if (tilemap.GetTile(coordinate) != null) {
-                Debug.Log(string.Format("TILES COLOR IS: {0}", tilemap.color));
+                key = roundVector3Int(coordinate);
+                Debug.Log("TILEKEY IS: " + key);
+                if (tileManager.tileDataStore[key] != null)
+                {
+                    tilemap.SetTile(coordinate, fasParty);
+                    Debug.Log(string.Format("Tile name is: {0}", tileManager.tileDataStore[key]));
+                    Debug.Log("AMOUNT OF POPS: " + tileManager.tileDataStore[key].tilePOPs.Count);
+                } else
+                {
+                    Debug.Log("KEY DOES NOT WORK. KEY: " + key);
+                }
             } else {
                 tilemap.SetTile(coordinate, socParty);
             }
