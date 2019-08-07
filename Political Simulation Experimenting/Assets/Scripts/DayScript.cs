@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class DayScript : MonoBehaviour
 {
     public float day;
+    public float dayUpdateSpeed = 1f;
     public Text textBox;
     public Text startBtnText;
 
@@ -25,39 +26,47 @@ public class DayScript : MonoBehaviour
         textBox.text = day.ToString() + " January, " + "2019";
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    void Calender()
+    public IEnumerator DateCounter()
     {
         if (timerActive)
         {
-            day++;
-
-            if (year == leapYear)
+            while (true)
             {
-                monthLength[1] = 29;
-                leapYear += 4;
-            } else {
-                monthLength[1] = 28;
-            }
+                yield return new WaitForSeconds(dayUpdateSpeed);
+                Debug.Log("Day is " + day);
+                day++;
+                if (year == leapYear)
+                {
+                    monthLength[1] = 29;
+                    leapYear += 4;
+                }
+                else
+                {
+                    monthLength[1] = 28;
+                }
 
-            if (month == 11 && day == 32)
-            {
-                year++;
-                month = 0;
-            }
+                if (month == 11 && day == 32)
+                {
+                    year++;
+                    month = 0;
+                    day = 1;
+                }
 
-            if (day == (monthLength[month] + 1) && month != 11)
-            {
-                day = 1;
-                month++;
+                if (day == (monthLength[month] + 1) && month != 11)
+                {
+                    Debug.Log("MONTH LENGTH IS: " + (monthLength[month] + 1));
+                    day = 1;
+                    month++;
+                }
+                textBox.text = day.ToString() + " " + monthsArray[month] + ", " + year.ToString();
             }
-            textBox.text = day.ToString() + " " + monthsArray[month] + ", " + year.ToString();
         }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
     }
 
     public void timerButton()
@@ -65,13 +74,29 @@ public class DayScript : MonoBehaviour
         timerActive = !timerActive;
         if (timerActive == true)
         {
-            InvokeRepeating("Calender", .01f, .25f);
+            StartCoroutine("DateCounter");
         }
         if (timerActive == false)
         {
-            CancelInvoke();
+            StopCoroutine("DateCounter");
         }
 
         startBtnText.text = timerActive ? "Pause" : "Start";
+    }
+
+    public void moreSpeed()
+    {
+        if (dayUpdateSpeed > 0.06125f)
+        {
+            dayUpdateSpeed -= 0.06125f;
+        }
+    }
+
+    public void lessSpeed()
+    {
+        if (dayUpdateSpeed < 2f)
+        {
+            dayUpdateSpeed += 0.125f;
+        }
     }
 }

@@ -1,10 +1,7 @@
 ﻿<Properties StartupConfiguration="{5C4A4165-0EA9-5698-BA8B-D72DCCB54209}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/TileManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/DayScript.cs">
     <Files>
-      <File FileName="Assets/Scripts/POPSystem.cs" Line="76" Column="40" />
-      <File FileName="Assets/Scripts/VotingSystem.cs" Line="121" Column="44" />
-      <File FileName="Assets/Scripts/GetTile.cs" Line="29" Column="26" />
-      <File FileName="Assets/Scripts/TileManager.cs" Line="84" Column="52" />
+      <File FileName="Assets/Scripts/DayScript.cs" Line="52" Column="29" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -12,7 +9,7 @@
           <Node name="Political Simulation Experimenting" expanded="True">
             <Node name="Assets" expanded="True">
               <Node name="Scripts" expanded="True">
-                <Node name="TileManager.cs" selected="True" />
+                <Node name="DayScript.cs" selected="True" />
               </Node>
             </Node>
           </Node>
@@ -22,7 +19,7 @@
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="7eae0125-95bb-497f-bef9-b41867486e0c" />
+  <MonoDevelop.Ide.ItemProperties.Assembly-CSharp PreferredExecutionTarget="ac679dee-3a58-4333-aa94-fc7031d0bacb" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
