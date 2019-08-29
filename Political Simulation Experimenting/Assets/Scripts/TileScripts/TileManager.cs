@@ -4,22 +4,36 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class createTileData {
-    public createTileData(string name, Vector3Int intV3, float population)
+    public createTileData(string Name, Vector3Int intV3, createParty MajorityParty, string MajorityPartysName, int majorityPartyVotes, int MajorityPartyVotes,int FascistPartyVotes, int CommunistPartyVotes, int LiberalPartyVotes, int CentristPartyVotes)
     {
-        Name = name;
+        name = Name;
         position = intV3;
-        people = population;
 
         tilePOPs = new List<createPOP>();
+        majorityParty = MajorityParty;
+        majorityPartysName = MajorityPartysName;
+
+        majorityPartyVotes = MajorityPartyVotes;
+        fascistPartyVotes = FascistPartyVotes;
+        communistPartyVotes = CommunistPartyVotes;
+        liberalPartyVotes = LiberalPartyVotes;
+        centristPartyVotes = CentristPartyVotes;
     }
 
-    public string Name { get; private set; }
+    public string name { get; private set; }
     public Vector3Int position { get; private set; }
-    public float people { get; private set; }
     public List<createPOP> tilePOPs { get; private set; }
+    public createParty majorityParty { get; set; }
+    public string majorityPartysName { get; set; }
+    public int majorityPartyVotes { get; set; }
+    public int fascistPartyVotes { get; set; }
+    public int communistPartyVotes { get; set; }
+    public int liberalPartyVotes { get; set; }
+    public int centristPartyVotes { get; set; }
 }
 
-public class TileManager : MonoBehaviour {
+public class TileManager : MonoBehaviour
+{
 
     public Tilemap tilemap;
 
@@ -27,7 +41,18 @@ public class TileManager : MonoBehaviour {
 
     POPSystem createPOPs;
 
-    int highestAmount;
+    public int highestAmount;
+
+    public int key;
+
+    VotingSystem votingSystem;
+    public Tile neutralSeat;
+    public Tile fasSeat;
+    public Tile commSeat;
+    public Tile libSeat;
+    public Tile centSeat;
+
+    createParty winningParty;
 
     int roundVector3Int(Vector3Int v3Int)
     {
@@ -41,28 +66,23 @@ public class TileManager : MonoBehaviour {
     void Awake()
     {
         createPOPs = FindObjectOfType<POPSystem>();
+        votingSystem = FindObjectOfType<VotingSystem>();
     }
 
-    public int key;
-
-    public Tile neutralSeat;
-    public Tile fasSeat;
-    public Tile commSeat;
-    public Tile libSeat;
-    public Tile centSeat;
-    public Tilemap localTileMap;
-
-    void Start () {
+    void Start()
+    {
         tileDataStore = new Dictionary<int, createTileData>();
-
-        foreach (var pos in tilemap.cellBounds.allPositionsWithin) {
-            int i = 0;
+        int i = 0;
+        foreach (var pos in tilemap.cellBounds.allPositionsWithin)
+        {
             Vector3Int posTilePlace = new Vector3Int(pos.x, pos.y, pos.z);
             Vector3 v3PosTilePlace = tilemap.CellToWorld(posTilePlace);
             Vector3Int checkPosTilePlace = new Vector3Int(posTilePlace.x, posTilePlace.y, posTilePlace.z);
 
-            if (tilemap.HasTile(posTilePlace)) {
-                createTileData tile = new createTileData("Mandate" + i, checkPosTilePlace, 10f);
+            if (tilemap.HasTile(posTilePlace))
+            {
+                createTileData tile = new createTileData("Mandate" + i, checkPosTilePlace, null, null, 0, 0, 0, 0, 0, 0);
+                i++;
                 key = roundVector3Int(checkPosTilePlace);
 
                 tileDataStore.Add(key, tile);
@@ -73,54 +93,107 @@ public class TileManager : MonoBehaviour {
                 int amountOfLib = 0;
                 int amountOfCent = 0;
 
-                foreach (var pop in tileDataStore[key].tilePOPs)
+                votingSystem.partySetup();
+                votingSystem.countVotes(key);
+
+                foreach (createPOP pop in tileDataStore[key].tilePOPs)
                 {
                     if (pop.ideology == "Fascism")
                     {
                         amountOfFasc++;
-                    } else if (pop.ideology == "Communism")
+                        Debug.Log("POP in " + tileDataStore[key].tilePOPs + " is fascist");
+                        tileDataStore[key].fascistPartyVotes++;
+                    }
+                    else if (pop.ideology == "Communism")
                     {
                         amountOfComm++;
-                    } else if(pop.ideology == "Neo-Liberalism")
+                        Debug.Log("POP in " + tileDataStore[key].tilePOPs + " is communist");
+                        tileDataStore[key].communistPartyVotes++;
+                    }
+                    else if (pop.ideology == "Neo-Liberalism")
                     {
                         amountOfLib++;
-                    } else if(pop.ideology == "Centrism")
+                        Debug.Log("POP in " + tileDataStore[key].tilePOPs + " is LIBERAL");
+                        tileDataStore[key].liberalPartyVotes++;
+                    }
+                    else if (pop.ideology == "Centrism")
                     {
                         amountOfCent++;
+                        Debug.Log("POP in " + tileDataStore[key].tilePOPs + " is centrist");
+                        tileDataStore[key].centristPartyVotes++;
                     }
                 }
 
+                int[] votesArray = { amountOfFasc, amountOfComm, amountOfLib, amountOfCent };
+
                 highestAmount = Mathf.Max(amountOfFasc, amountOfComm, amountOfLib, amountOfCent);
+                Debug.Log("AMOUNT OF FASCIST: " + amountOfFasc);
+                Debug.Log("AMOUNT OF COMMIES: " + amountOfComm);
+                Debug.Log("AMOUNT OF LIBERALS: " + amountOfLib);
+                Debug.Log("AMOUNT OF CENTRISTS: " + amountOfCent);
+                Debug.Log("HIGHEST AMOUNT IS: " + highestAmount);
 
-                if (amountOfFasc == highestAmount)
+                foreach (int votes in votesArray)
                 {
-                    localTileMap.SetTile(checkPosTilePlace, fasSeat);
-                    Debug.Log("FASC SEAT!");
-                } else if (amountOfComm == highestAmount)
-                {
-                    localTileMap.SetTile(checkPosTilePlace, commSeat);
-                } else if (amountOfLib == highestAmount)
-                {
-                    Debug.Log("Liberal seat made!");
-                    localTileMap.SetTile(checkPosTilePlace, libSeat);
-                } else if (amountOfCent == highestAmount)
-                {
-                    localTileMap.SetTile(checkPosTilePlace, centSeat);
-                } else
-                {
-                    localTileMap.SetTile(checkPosTilePlace, neutralSeat);
+                    if (votes == highestAmount)
+                    {
+                        Debug.Log("PARTY VOTES =: " + votes);
+                        if (votes == amountOfFasc && votes == amountOfComm && votes == amountOfLib && votes == amountOfCent)
+                        {
+                            tilemap.SetTile(checkPosTilePlace, neutralSeat);
+                            tileDataStore[key].majorityPartysName = "No party";
+                            tileDataStore[key].majorityPartyVotes = 0;
+                            Debug.Log("NEUTRAL SEAT MADE");
+                        }
+                        else
+                        {
+                            if (amountOfFasc == highestAmount)
+                            {
+                                if (amountOfFasc != amountOfComm || amountOfFasc != amountOfLib || amountOfFasc != amountOfCent)
+                                {
+                                    tilemap.SetTile(checkPosTilePlace, fasSeat);
+                                    tileDataStore[key].majorityParty = votingSystem.partyList[0];
+                                    tileDataStore[key].majorityPartysName = "The Fascist Party";
+                                    tileDataStore[key].majorityPartyVotes = amountOfFasc;
+                                }
+                            }
+                            else if (amountOfComm == highestAmount)
+                            {
+                                if (amountOfComm != amountOfFasc || amountOfComm != amountOfLib || amountOfComm != amountOfCent)
+                                {
+                                    tilemap.SetTile(checkPosTilePlace, commSeat);
+                                    tileDataStore[key].majorityParty = votingSystem.partyList[1];
+                                    tileDataStore[key].majorityPartysName = "The Communist Party";
+                                    tileDataStore[key].majorityPartyVotes = amountOfComm;
+                                }
+                            }
+                            else if (amountOfLib == highestAmount)
+                            {
+                                if (amountOfLib != amountOfFasc || amountOfLib != amountOfComm || amountOfLib != amountOfCent)
+                                {
+                                    tilemap.SetTile(checkPosTilePlace, libSeat);
+                                    tileDataStore[key].majorityParty = votingSystem.partyList[2];
+                                    tileDataStore[key].majorityPartysName = "The Liberal Party";
+                                    tileDataStore[key].majorityPartyVotes = amountOfLib;
+                                }
+                            }
+                            else if (amountOfCent == highestAmount)
+                            {
+                                if (amountOfCent != amountOfFasc || amountOfCent != amountOfComm || amountOfCent != amountOfLib)
+                                {
+                                    tilemap.SetTile(checkPosTilePlace, centSeat);
+                                    tileDataStore[key].majorityParty = votingSystem.partyList[3];
+                                    tileDataStore[key].majorityPartysName = "The Centrist Party";
+                                    tileDataStore[key].majorityPartyVotes = amountOfCent;
+                                }
+                            }
+                        }
+                    }
+                    Debug.Log("This is the newest data: " + key);
+                    Debug.Log("LENGTH IS: " + tileDataStore.Count);
                 }
-
-                Debug.Log("This is the newest data: "+ key);
-                Debug.Log("LENGTH IS: " + tileDataStore.Count);
-
-                i++;
             }
         }
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        votingSystem.GeneralVote();
+    }
 }
