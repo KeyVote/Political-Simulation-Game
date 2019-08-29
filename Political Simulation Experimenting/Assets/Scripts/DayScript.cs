@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class DayScript : MonoBehaviour
 {
-    public float day;
+    public int day;
     public float dayUpdateSpeed = 1f;
     public Text textBox;
     public Text startBtnText;
@@ -34,7 +34,6 @@ public class DayScript : MonoBehaviour
             {
                 yield return new WaitForSeconds(dayUpdateSpeed);
                 Debug.Log("Day is " + day);
-                day++;
                 if (year == leapYear)
                 {
                     monthLength[1] = 29;
@@ -45,19 +44,20 @@ public class DayScript : MonoBehaviour
                     monthLength[1] = 28;
                 }
 
-                if (month == 11 && day == 32)
+                if (month == 11 && day == 31)
                 {
                     year++;
                     month = 0;
-                    day = 1;
+                    day = 0;
                 }
 
                 if (day == (monthLength[month] + 1) && month != 11)
                 {
                     Debug.Log("MONTH LENGTH IS: " + (monthLength[month] + 1));
-                    day = 1;
+                    day = 0;
                     month++;
                 }
+                day++;
                 textBox.text = day.ToString() + " " + monthsArray[month] + ", " + year.ToString();
             }
         }

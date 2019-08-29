@@ -22,31 +22,28 @@ public class POPSystem : MonoBehaviour
     int centristAmount;
 
     TileManager tileManager;
-    // Start is called before the first frame update
 
     void Awake()
     {
         tileManager = FindObjectOfType<TileManager>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     public void CreatePOPsForMandate(int key)
     {
-        var rnd = new System.Random();
-        int communistRandom = rnd.Next(15);
-        int fascistRandom = rnd.Next(15);
-        int liberalRandom = rnd.Next(15);
-        int centRandom = rnd.Next(15);
+        int communistRandom = Random.Range(0, 16);
+        int fascistRandom = Random.Range(0, 16);
+        int liberalRandom = Random.Range(0, 16);
+        int centRandom = Random.Range(0, 16);
+        Debug.Log("Cent random is: " + centRandom);
+        Debug.Log("Fasc random is: " + fascistRandom);
+        Debug.Log("Liberal random is: " + liberalRandom);
+        Debug.Log("communist random is: " + communistRandom);
+
+        Debug.Log("THE CREATE KEY IS: " + key);
 
         for (int i = 0; i < fascistRandom; i++)
         {
             createPOP POP = new createPOP("FascistPOP", fascistAmount, "Fascism");
-            Debug.Log("THE CREATE KEY IS: " + key);
             fascistAmount++;
 
             tileManager.tileDataStore[key].tilePOPs.Add(POP);

@@ -4,23 +4,26 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
-class createParty
+public class createParty
 {
-    public createParty(string name, string ideologyType, int amountOfVotes) // Add party leader name
+    public createParty(string name, string ideologyType, int amountOfVotes, Tile seat) // Add party leader name
     {
         Name = name;
         ideology = ideologyType;
         votes = amountOfVotes;
+        mandate = seat;
     }
 
     public string Name { get; private set; }
     public string ideology { get; private set; }
-    public int votes { get; private set; }
+    public int votes { get; set; }
+    public Tile mandate { get; private set; }
 }
 
 public class VotingSystem : MonoBehaviour
 {
     TileManager tileManager;
+
 
     int totalVotes;
     int amountOfFasc;
@@ -28,13 +31,17 @@ public class VotingSystem : MonoBehaviour
     int amountOfLib;
     int amountOfCent;
 
-    List<createParty> partyList;
+    public List<createParty> partyList;
+
+    public Tile fascSeat;
+    public Tile commSeat;
+    public Tile libSeat;
+    public Tile centSeat;
 
     createParty winnerParty;
     int winnerVotes;
   
     public Tilemap tilemap;
-    int Dictkey; 
 
     Canvas canvas;
     public Text winningPartyText;
@@ -44,39 +51,7 @@ public class VotingSystem : MonoBehaviour
     {
         tileManager = FindObjectOfType<TileManager>();
         canvas = FindObjectOfType<Canvas>();
-    }
-    
-    void countVotes()
-    {
-        foreach (var pos in tilemap.cellBounds.allPositionsWithin)
-        {
-            Vector3Int posTilePlace = new Vector3Int(pos.x, pos.y, pos.z);
-            if (tilemap.HasTile(posTilePlace))
-            {
-                Dictkey = roundVector3Int(posTilePlace);
-                foreach (var pop in tileManager.tileDataStore[Dictkey].tilePOPs)
-                {
-                    if (pop.ideology == "Fascism")
-                    {
-                        amountOfFasc++;
-                        totalVotes++;
-                    }
-                    else if (pop.ideology == "Communism")
-                    {
-                        amountOfComm++;
-                        totalVotes++;
-                    } else if (pop.ideology == "Neo-Liberalism")
-                    {
-                        amountOfLib++;
-                        totalVotes++;
-                    } else if (pop.ideology == "Centrism")
-                    {
-                        amountOfCent++;
-                        totalVotes++;
-                    }
-                }
-            }
-        }
+        partyList = new List<createParty>();
     }
 
     int roundVector3Int(Vector3Int v3Int)
@@ -88,17 +63,50 @@ public class VotingSystem : MonoBehaviour
         return sum;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void countVotes(int key)
     {
-        countVotes();
+        //foreach (Vector3Int pos in tilemap.cellBounds.allPositionsWithin)
+        
+        //Vector3Int posTilePlace = new Vector3Int(pos.x, pos.y, pos.z);
+        //if (tilemap.HasTile(posTilePlace))
+        
+        //Dictkey = roundVector3Int(posTilePlace);
+        foreach (createPOP pop in tileManager.tileDataStore[key].tilePOPs)
+        {
+            if (pop.ideology == "Fascism")
+            {
+                amountOfFasc++;
+                totalVotes++;
+            }
+            else if (pop.ideology == "Communism")
+            {
+                amountOfComm++;
+                totalVotes++;
+            } else if (pop.ideology == "Neo-Liberalism")
+            {
+                amountOfLib++;
+                totalVotes++;
+            } else if (pop.ideology == "Centrism")
+            {
+                amountOfCent++;
+                totalVotes++;
+            }
+        }
+        partyList[0].votes = amountOfFasc;
+        partyList[1].votes = amountOfComm;
+        partyList[2].votes = amountOfLib;
+        partyList[3].votes = amountOfCent;
+    }
 
-        createParty fascistParty = new createParty("The Fascist Party", "Fascism", amountOfFasc);
-        createParty communistParty = new createParty("The Communist Party", "Communism", amountOfComm);
-        createParty liberalParty = new createParty("The Liberal Party", "Neo-Liberalism", amountOfLib);
-        createParty centristParty = new createParty("The Centrist Party", "Centrism", amountOfCent);
+    // Start is called before the first frame update
+    public void partySetup()
+    {
 
-        partyList = new List<createParty>();
+        createParty fascistParty = new createParty("The Fascist Party", "Fascism", amountOfFasc, fascSeat);
+        createParty communistParty = new createParty("The Communist Party", "Communism", amountOfComm, commSeat);
+        createParty liberalParty = new createParty("The Liberal Party", "Neo-Liberalism", amountOfLib, libSeat);
+        createParty centristParty = new createParty("The Centrist Party", "Centrism", amountOfCent, centSeat);
+
         partyList.Add(fascistParty);
         partyList.Add(communistParty);
         partyList.Add(liberalParty);
@@ -106,13 +114,9 @@ public class VotingSystem : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        GeneralVote();
-    }
-
+ 
     // General Vote is the general voting (obviously)
-    void GeneralVote()
+    public void GeneralVote()
     {
         winnerVotes = Mathf.Max(partyList[0].votes, partyList[1].votes, partyList[2].votes, partyList[3].votes);
 

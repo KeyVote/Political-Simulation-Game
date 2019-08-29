@@ -139,7 +139,7 @@ Tilemap:
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 4bf9ce7b03235ba4ebb7fbd2bc3ca0fb, type: 2}
   - m_RefCount: 1
-    m_Data: {fileID: 11400000, guid: 009690aaca3a443048e49114135a2774, type: 2}
+    m_Data: {fileID: 11400000, guid: 564848744dd874643825fa825ee707a0, type: 2}
   - m_RefCount: 1
     m_Data: {fileID: 11400000, guid: 4a8c2f20c8b6f42cc990966b5273bc27, type: 2}
   m_TileSpriteArray:
@@ -225,6 +225,7 @@ TilemapRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_LightProbeVolumeOverride: {fileID: 0}
   m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
